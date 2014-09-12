@@ -32,6 +32,20 @@
   (and (and (<= 0 x) (<= x size)) (and (<= 0 y) (<= y size)))
   )
 
+; Does not handle diagonals, src, dest
+(defn direction_to_coord [[start_x,start_y], [end_x, end_y]]
+    (cond
+      (< start_x end_x) "east"
+      (> start_x end_x) "west"
+      (< start_y end_y) "south"
+      (> start_y end_y) "north"
+      :else "stay")
+)
+
+(defn move_to_coord [input, [x,y]]
+  (direction_to_coord (our_position input) [x,y])
+  )
+
 (defn adjacent_coords [size, [x,y]]
     (let [coords 
         [
@@ -55,11 +69,20 @@
 (defn bot [input]
   "Implement this function to create your bot!"
   ; (prn (tile_at input (our_position input)))
-  (prn (map #(tile_at input %1) (walkable_tiles_around input (our_position input))))
+  ; (prn (map #(tile_at input %1) (walkable_tiles_around input (our_position input))))
   ; (prn (adjacent_coords 12 [0,0]))
   ; ()
   ; (prn (total_size input))
-  (first (shuffle ["north", "south", "east", "west", "stay"])))
+  (prn (our_position input))
+  (let [direction 
+    (move_to_coord input (first (shuffle (walkable_tiles_around input (our_position input)))))
+    ]
+    (prn direction)
+    direction
+    )
+  
+  ; (first (shuffle ["north", "south", "east", "west", "stay"])))
+)
 
 ; Because the (y,x) position of the server is inversed. We fix it to (x,y).
 (defn fix-pos [{:keys [x y]}] [y x])
