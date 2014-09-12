@@ -66,22 +66,20 @@
   (filter #(not= (get (tile_at input %1) :tile) :wall) (tiles_around input (our_position input)))
   )
 
+(defn choose_coord [input]
+  (first (shuffle (walkable_tiles_around input (our_position input))))
+  )
+
 (defn bot [input]
   "Implement this function to create your bot!"
-  ; (prn (tile_at input (our_position input)))
-  ; (prn (map #(tile_at input %1) (walkable_tiles_around input (our_position input))))
-  ; (prn (adjacent_coords 12 [0,0]))
-  ; ()
-  ; (prn (total_size input))
   (prn (our_position input))
   (let [direction 
-    (move_to_coord input (first (shuffle (walkable_tiles_around input (our_position input)))))
+    (move_to_coord input (choose_coord input))
     ]
     (prn direction)
     direction
     )
   
-  ; (first (shuffle ["north", "south", "east", "west", "stay"])))
 )
 
 ; Because the (y,x) position of the server is inversed. We fix it to (x,y).
