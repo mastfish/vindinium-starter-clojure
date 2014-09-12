@@ -23,6 +23,7 @@
   )
 (defn at [[x y] tiles size]
  (tiles (+ (* y size) x)))
+
 (defn tile_at [input, [x,y]] 
   (at [x,y] (tiles input) (total_size input))
   )
@@ -47,10 +48,14 @@
   (adjacent_coords (total_size input) [x,y])
   )
 
+(defn walkable_tiles_around [input, [x,y]]
+  (filter #(not= (get (tile_at input %1) :tile) :wall) (tiles_around input (our_position input)))
+  )
+
 (defn bot [input]
   "Implement this function to create your bot!"
   ; (prn (tile_at input (our_position input)))
-  (prn (tiles_around input (our_position input)))
+  (prn (map #(tile_at input %1) (walkable_tiles_around input (our_position input))))
   ; (prn (adjacent_coords 12 [0,0]))
   ; ()
   ; (prn (total_size input))
