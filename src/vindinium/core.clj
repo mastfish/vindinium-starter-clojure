@@ -4,6 +4,7 @@
   (:use [clojure.core.match :only (match)]))
 
 (require '[clj-http.client :as http])
+(use '[clojure.java.shell :only [sh]])
 
 (def server-url "http://vindinium.org")
 (defn secretkey [] (clojure.string/trim-newline (System/getenv "VINDINIUM_SECRET_KEY")))
@@ -24,7 +25,7 @@
 (defn at [[x y] tiles size]
  (tiles (+ (* y size) x)))
 
-(defn tile_at [input, [x,y]] 
+(defn tile_at [input, [x,y]]
   (at [x,y] (tiles input) (total_size input))
   )
 
@@ -47,7 +48,7 @@
   )
 
 (defn adjacent_coords [size, [x,y]]
-    (let [coords 
+    (let [coords
         [
           [x,(- y 1)]
           [(+ x 1),y]
@@ -66,20 +67,37 @@
   (filter #(not= (get (tile_at input %1) :tile) :wall) (tiles_around input (our_position input)))
   )
 
+(defn gold_value [input, [x,y]]
+  (let [tile (tile_at input, [x,y])]
+    (prn "inputtiles" tile)
+    (cond
+      (and(= (:tile tile) :mine) (not=(:id tile) "1")) 100
+      :else 0)
+    )
+
+  )
+
 (defn choose_coord [input]
+  (prn (map #(gold_value input %1) (walkable_tiles_around input (our_position input) )))
   (first (shuffle (walkable_tiles_around input (our_position input))))
   )
+
+;(defn paint_board [input]
+;  (map gold_value (tiles input)
+;  )
+
+
 
 (defn bot [input]
   "Implement this function to create your bot!"
   (prn (our_position input))
-  (let [direction 
+  (let [direction
     (move_to_coord input (choose_coord input))
     ]
     (prn direction)
     direction
     )
-  
+
 )
 
 ; Because the (y,x) position of the server is inversed. We fix it to (x,y).
@@ -130,6 +148,7 @@
 (defn training [secret-key turns]
   (let [input (request (str server-url "/api/training") {:key secret-key :turns turns})]
     (println (str "Starting training game " (:viewUrl input)))
+    (sh "open" (:viewUrl input))
     (step input)
     (println (str "Finished training game " (:viewUrl input)))))
 
