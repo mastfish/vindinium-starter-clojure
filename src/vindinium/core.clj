@@ -6,14 +6,55 @@
 (require '[clj-http.client :as http])
 
 (def server-url "http://vindinium.org")
+(defn secretkey [] (clojure.string/trim-newline (System/getenv "VINDINIUM_SECRET_KEY")))
+
+(defn tiles [input]
+  (get (get (get input :game) :board) :tiles)
+  )
+(defn total_size [input]
+  (get (get (get input :game) :board) :size)
+  )
+
+(defn our_hero [input]
+  (get input :hero)
+  )
+(defn our_position [input]
+  (get (our_hero input) :pos)
+  )
+(defn at [[x y] tiles size]
+ (tiles (+ (* y size) x)))
+(defn tile_at [input, [x,y]] 
+  (at [x,y] (tiles input) (total_size input))
+  )
+
+(defn both_in_range[[x, y], size]
+  (and (and (<= 0 x) (<= x size)) (and (<= 0 y) (<= y size)))
+  )
+
+(defn adjacent_coords [size, [x,y]]
+    (let [coords 
+        [
+          [x,(- y 1)]
+          [(+ x 1),y]
+          [x,(+ y 1)]
+          [(- x 1),y]
+        ]]
+      (filter #(both_in_range, %1, size) coords)
+        )
+  )
+
+(defn tiles_around [input, [x,y]]
+  (adjacent_coords (total_size input) [x,y])
+  )
 
 (defn bot [input]
   "Implement this function to create your bot!"
-  ; (prn input)
+  ; (prn (tile_at input (our_position input)))
+  (prn (tiles_around input (our_position input)))
+  ; (prn (adjacent_coords 12 [0,0]))
+  ; ()
+  ; (prn (total_size input))
   (first (shuffle ["north", "south", "east", "west", "stay"])))
-
-(defn at [[x y] tiles size]
- (tiles (+ (* y size) x)))
 
 ; Because the (y,x) position of the server is inversed. We fix it to (x,y).
 (defn fix-pos [{:keys [x y]}] [y x])
