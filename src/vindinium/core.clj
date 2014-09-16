@@ -8,8 +8,39 @@
 (def server-url "http://vindinium.org")
 (defn secretkey [] (clojure.string/trim-newline (System/getenv "VINDINIUM_SECRET_KEY")))
 
+(def test-board 
+  {:game 
+  {:id "uc6as52d", :turn 0, :maxTurns 4
+  ; , :heroes 
+  ; (
+  ;   {:elo 1191, :userId "xgxjnc5e", :name "mastfish", :gold 0, :spawnPos [4 10], :pos [4 10], :crashed false, :life 100, :id 1, :mineCount 0} 
+  ;   {:id 2, :name "random", :pos [1 1], :life 100, :gold 0, :mineCount 0, :spawnPos [4 17], :crashed false} 
+  ;   {:id 3, :name "random", :pos [23 17], :life 100, :gold 0, :mineCount 0, :spawnPos [23 17], :crashed false} 
+  ;   {:id 4, :name "random", :pos [23 10], :life 100, :gold 0, :mineCount 0, :spawnPos [23 10], :crashed false}), 
+  :board {:size 5, :tiles 
+    [{:tile :hero, :id 1} {:tile :air} {:tile :mine} {:tile :wall} {:tile :wall} 
+     {:tile :air} {:tile :mine} {:tile :wall} {:tile :wall} {:tile :wall} 
+     {:tile :wall} {:tile :wall} {:tile :wall} {:tile :wall} {:tile :wall} 
+     {:tile :wall} {:tile :wall} {:tile :wall} {:tile :wall} {:tile :wall} 
+     {:tile :wall} {:tile :mine} {:tile :air} {:tile :wall} {:tile :wall} 
+     ]}, :finished false}, :hero {:elo 1191, :userId "xgxjnc5e", :name "mastfish", :gold 0, :spawnPos [4 10], :pos [4 10], :crashed false, :life 100, :id 1, :mineCount 0}, :token "4jcl", :viewUrl "http://vindinium.org/uc6as52d", :playUrl "http://vindinium.org/api/uc6as52d/4jcl/play"}
+)
+
+(defn score [tile]
+  (assoc tile :score (cond
+    (= (:tile tile) :mine) 100
+    :else 0
+    )
+    )
+  )
+
+(defn adjacency [tiles]
+  (mapv score tiles)
+  )
+
 (defn bot [input]
   "Implement this function to create your bot!"
+  (prn (adjacency (:tiles (:board (:game input)))))
   (let [direction 
     (str "stay")
     ]
