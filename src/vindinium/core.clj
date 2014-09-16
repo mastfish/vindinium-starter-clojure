@@ -8,73 +8,10 @@
 (def server-url "http://vindinium.org")
 (defn secretkey [] (clojure.string/trim-newline (System/getenv "VINDINIUM_SECRET_KEY")))
 
-(defn tiles [input]
-  (get (get (get input :game) :board) :tiles)
-  )
-(defn total_size [input]
-  (get (get (get input :game) :board) :size)
-  )
-
-(defn our_hero [input]
-  (get input :hero)
-  )
-(defn our_position [input]
-  (get (our_hero input) :pos)
-  )
-(defn at [[x y] tiles size]
- (tiles (+ (* y size) x)))
-
-(defn tile_at [input, [x,y]] 
-  (at [x,y] (tiles input) (total_size input))
-  )
-
-(defn both_in_range[[x, y], size]
-  (and (and (<= 0 x) (<= x size)) (and (<= 0 y) (<= y size)))
-  )
-
-; Does not handle diagonals, src, dest
-(defn direction_to_coord [[start_x,start_y], [end_x, end_y]]
-    (cond
-      (< start_x end_x) "east"
-      (> start_x end_x) "west"
-      (< start_y end_y) "south"
-      (> start_y end_y) "north"
-      :else "stay")
-)
-
-(defn move_to_coord [input, [x,y]]
-  (direction_to_coord (our_position input) [x,y])
-  )
-
-(defn adjacent_coords [size, [x,y]]
-    (let [coords 
-        [
-          [x,(- y 1)]
-          [(+ x 1),y]
-          [x,(+ y 1)]
-          [(- x 1),y]
-        ]]
-      (filter #(both_in_range, %1, size) coords)
-        )
-  )
-
-(defn tiles_around [input, [x,y]]
-  (adjacent_coords (total_size input) [x,y])
-  )
-
-(defn walkable_tiles_around [input, [x,y]]
-  (filter #(not= (get (tile_at input %1) :tile) :wall) (tiles_around input (our_position input)))
-  )
-
-(defn choose_coord [input]
-  (first (shuffle (walkable_tiles_around input (our_position input))))
-  )
-
 (defn bot [input]
   "Implement this function to create your bot!"
-  (prn (our_position input))
   (let [direction 
-    (move_to_coord input (choose_coord input))
+    (str "stay")
     ]
     (prn direction)
     direction
