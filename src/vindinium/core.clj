@@ -18,29 +18,37 @@
   ;   {:id 3, :name "random", :pos [23 17], :life 100, :gold 0, :mineCount 0, :spawnPos [23 17], :crashed false} 
   ;   {:id 4, :name "random", :pos [23 10], :life 100, :gold 0, :mineCount 0, :spawnPos [23 10], :crashed false}), 
   :board {:size 5, :tiles 
-    [{:tile :hero, :id 1} {:tile :air} {:tile :mine} {:tile :wall} {:tile :wall} 
+    [{:tile :air} {:tile :mine} {:tile :wall} {:tile :wall} {:tile :wall} 
      {:tile :air} {:tile :mine} {:tile :wall} {:tile :wall} {:tile :wall} 
-     {:tile :wall} {:tile :wall} {:tile :wall} {:tile :wall} {:tile :wall} 
-     {:tile :wall} {:tile :wall} {:tile :wall} {:tile :wall} {:tile :wall} 
+     {:tile :wall} {:tile :mine} {:tile :hero, :id 1} {:tile :wall} {:tile :wall} 
+     {:tile :wall} {:tile :wall} {:tile :air} {:tile :wall} {:tile :wall} 
      {:tile :wall} {:tile :mine} {:tile :air} {:tile :wall} {:tile :wall} 
-     ]}, :finished false}, :hero {:elo 1191, :userId "xgxjnc5e", :name "mastfish", :gold 0, :spawnPos [4 10], :pos [4 10], :crashed false, :life 100, :id 1, :mineCount 0}, :token "4jcl", :viewUrl "http://vindinium.org/uc6as52d", :playUrl "http://vindinium.org/api/uc6as52d/4jcl/play"}
+     ]}, :finished false}, :hero {:elo 1191, :userId "xgxjnc5e", :name "mastfish", :gold 0, :spawnPos [4 10], :pos [2 2], :crashed false, :life 100, :id 1, :mineCount 0}, :token "4jcl", :viewUrl "http://vindinium.org/uc6as52d", :playUrl "http://vindinium.org/api/uc6as52d/4jcl/play"}
 )
 
 (defn score [tile]
   (assoc tile :score (cond
     (= (:tile tile) :mine) 100
-    :else 0
-    )
-    )
-  )
+    :else 0)))
 
-(defn adjacency [tiles]
-  (mapv score tiles)
+(defn position [[x, y], size]
+ (+ (* y size) x)
+ )
+
+; (defn )
+
+; (defn possible-moves [tiles, position, size]
+  
+;   )
+
+(defn best-move [tiles, position, size]
+  (possible-moves tiles, position, size
+  ; ((mapv score tiles) position)
   )
 
 (defn bot [input]
   "Implement this function to create your bot!"
-  (prn (adjacency (:tiles (:board (:game input)))))
+  (prn (best-move (:tiles (:board (:game input))) (:pos (:hero input))  (:size(:board (:game input)))))
   (let [direction 
     (str "stay")
     ]
