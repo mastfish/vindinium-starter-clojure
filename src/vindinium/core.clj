@@ -4,6 +4,7 @@
   (:use [clojure.core.match :only (match)]))
 
 (require '[clj-http.client :as http])
+(require '[clojure.core.reducers :as r])
 
 (def server-url "http://vindinium.org")
 (defn secretkey [] (clojure.string/trim-newline (System/getenv "VINDINIUM_SECRET_KEY")))
@@ -26,19 +27,14 @@
      ]}, :finished false}, :hero {:elo 1191, :userId "xgxjnc5e", :name "mastfish", :gold 0, :spawnPos [4 10], :pos [2 2], :crashed false, :life 100, :id 1, :mineCount 0}, :token "4jcl", :viewUrl "http://vindinium.org/uc6as52d", :playUrl "http://vindinium.org/api/uc6as52d/4jcl/play"}
 )
 
-(defn score [tile]
-  (assoc tile :score (cond
-    (= (:tile tile) :mine) 100
-    :else 0)))
-
-(defn position [[x, y], size]
+(defn coords_to_index [[x, y], size]
  (+ (* y size) x)
  )
 
 (defn both_in_range[[x, y], size]
   (and (<= 0 x) (<= x size) (<= 0 y) (<= y size)))
 
-(defn adjacent_coords [size, [x,y]]
+(defn adjacent_coords [[x,y] size]
     (let [coords
         [
           [x,(- y 1)]
@@ -50,18 +46,29 @@
         )
   )
 
-; (defn possible-moves [tiles, position, size]
-;   (map #(tile %1) )
-;   )
+(defn base-score [tile,tiles]
+  ; Each tile will propogate values to all tiles at this stage
+  ; This should return values for each of tiles, after being painted with value from tile
+    (mapv #(1) tiles )
+  )
+
+(defn scored-tiles [tiles]
+  (r/fold + (map #(base-score %1 tiles) tiles)
+  ))
+
+(defn possible-moves [tiles, position, size]
+  (map #(tiles (coords_to_index %1 size)) (adjacent_coords position size ))
+  )
 
 (defn best-move [tiles, position, size]
   (possible-moves tiles, position, size
   ; ((mapv score tiles) position)
-  )
+  ))
 
 (defn bot [input]
   "Implement this function to create your bot!"
-  (prn (best-move (:tiles (:board (:game input))) (:pos (:hero input))  (:size(:board (:game input)))))
+  (prn (scored-tiles (:tiles (:board (:game input)))))
+  ; (prn (best-move (:tiles (:board (:game input))) (:pos (:hero input))  (:size(:board (:game input)))))
   (let [direction 
     (str "stay")
     ]
