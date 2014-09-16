@@ -35,10 +35,23 @@
  (+ (* y size) x)
  )
 
-; (defn )
+(defn both_in_range[[x, y], size]
+  (and (<= 0 x) (<= x size) (<= 0 y) (<= y size)))
+
+(defn adjacent_coords [size, [x,y]]
+    (let [coords
+        [
+          [x,(- y 1)]
+          [(+ x 1),y]
+          [x,(+ y 1)]
+          [(- x 1),y]
+        ]]
+      (filter #(both_in_range, %1, size) coords)
+        )
+  )
 
 ; (defn possible-moves [tiles, position, size]
-  
+;   (map #(tile %1) )
 ;   )
 
 (defn best-move [tiles, position, size]
