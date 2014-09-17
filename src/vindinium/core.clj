@@ -45,15 +45,17 @@
       (filter #(both_in_range, %1, size) coords)
         )
   )
-
-(defn base-score [tile,tiles]
+(defn tile-score [tile, tiles]
+  1
+  )
+(defn score-layers [tile,tiles]
   ; Each tile will propogate values to all tiles at this stage
   ; This should return values for each of tiles, after being painted with value from tile
-    (mapv #(1) tiles )
+    (mapv tile-score tiles )
   )
 
 (defn scored-tiles [tiles]
-  (r/fold + (map #(base-score %1 tiles) tiles)
+  (prn (apply map + (map #(score-layers %1 tiles) tiles))
   ))
 
 (defn possible-moves [tiles, position, size]
