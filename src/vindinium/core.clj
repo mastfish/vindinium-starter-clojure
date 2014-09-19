@@ -5,6 +5,7 @@
 
 (require '[clj-http.client :as http])
 (require '[clojure.core.reducers :as r])
+(require '[clojure.math.numeric-tower :as math])
 
 (def server-url "http://vindinium.org")
 (defn secretkey [] (clojure.string/trim-newline (System/getenv "VINDINIUM_SECRET_KEY")))
@@ -34,6 +35,16 @@
 (defn both_in_range[[x, y], size]
   (and (<= 0 x) (<= x size) (<= 0 y) (<= y size)))
 
+(defn adjacent_tiles [tile, tiles]
+  (let [size 
+        (math/sqrt (count tiles))
+        ]
+    (prn size)
+    )
+  ; (let size [(count tiles)] (mod )
+  (:position tile)
+  )
+
 (defn adjacent_coords [[x,y] size]
     (let [coords
         [
@@ -46,12 +57,13 @@
         )
   )
 (defn tile-score [tile, tiles]
+  (prn (adjacent_tiles tile tiles))
   1
   )
 (defn score-layers [tile,tiles]
   ; Each tile will propogate values to all tiles at this stage
   ; This should return values for each of tiles, after being painted with value from tile
-    (mapv tile-score tiles )
+    (mapv #(tile-score %1 tiles) tiles )
   )
 
 (defn scored-tiles [tiles]
@@ -67,9 +79,13 @@
   ; ((mapv score tiles) position)
   ))
 
+(defn tiles-with-idx [input]
+  (into [] (map-indexed #(assoc %2 :position %1) (:tiles (:board (:game input) )))
+  ))
+
 (defn bot [input]
   "Implement this function to create your bot!"
-  (prn (scored-tiles (:tiles (:board (:game input)))))
+  (prn (scored-tiles (tiles-with-idx input)))
   ; (prn (best-move (:tiles (:board (:game input))) (:pos (:hero input))  (:size(:board (:game input)))))
   (let [direction 
     (str "stay")
