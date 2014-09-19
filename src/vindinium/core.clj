@@ -28,10 +28,12 @@
      ]}, :finished false}, :hero {:elo 1191, :userId "xgxjnc5e", :name "mastfish", :gold 0, :spawnPos [4 10], :pos [2 2], :crashed false, :life 100, :id 1, :mineCount 0}, :token "4jcl", :viewUrl "http://vindinium.org/uc6as52d", :playUrl "http://vindinium.org/api/uc6as52d/4jcl/play"}
 )
 
+; TODO, remove [x, y] based logic
 (defn coords_to_index [[x, y], size]
  (+ (* y size) x)
  )
 
+; TODO, remove [x, y] based logic
 (defn both_in_range[[x, y], size]
   (and (<= 0 x) (<= x size) (<= 0 y) (<= y size)))
 
@@ -43,7 +45,7 @@
      (adjacent_coords [(mod (:position tile) size), (- (quot (:position tile) size) 1)] size))
     )
   )
-
+; TODO, remove [x, y] based logic
 (defn adjacent_coords [[x,y] size]
     (let [coords
         [
