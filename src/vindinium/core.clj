@@ -39,10 +39,9 @@
   (let [size 
         (math/sqrt (count tiles))
         ]
-    (prn size)
+    (map #(tiles (coords_to_index %1 size))
+     (adjacent_coords [(mod (:position tile) size), (- (quot (:position tile) size) 1)] size))
     )
-  ; (let size [(count tiles)] (mod )
-  (:position tile)
   )
 
 (defn adjacent_coords [[x,y] size]
@@ -56,14 +55,20 @@
       (filter #(both_in_range, %1, size) coords)
         )
   )
-(defn tile-score [tile, tiles]
-  (prn (adjacent_tiles tile tiles))
-  1
+(defn tile-score [source_tile, target_tile, tiles]
+  (prn source_tile)
+  ; This score computes the score added/subtracted by the relationship between source and target tiles
+  ; I guess that we should return 1000 - the distance between then if source is a mine, otherwise always zero
+  ; (prn (adjacent_tiles tile tiles))
+  (cond 
+    (=(:tile source_tile) :mine) 100
+    :else 1
+        )
   )
 (defn score-layers [tile,tiles]
   ; Each tile will propogate values to all tiles at this stage
   ; This should return values for each of tiles, after being painted with value from tile
-    (mapv #(tile-score %1 tiles) tiles )
+    (mapv #(tile-score tile %1 tiles) tiles )
   )
 
 (defn scored-tiles [tiles]
